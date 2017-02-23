@@ -25,7 +25,7 @@ SECRET_KEY = 'bd#2_1@(a29g6w95zu69%5z!7iu8+jb1a-_1#jdl0=e(x7ptjc'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -37,20 +37,25 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'corsheaders',
+    'linkedBookmarkApp',
 )
 
 MIDDLEWARE_CLASSES = (
-    'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.middleware.security.SecurityMiddleware',
 )
 
 ROOT_URLCONF = 'LinkedBookmark.urls'
+
+CORS_ORIGIN_ALLOW_ALL = True
+
+CORS_EXPOSE_HEADERS = (
+    'link',
+)
 
 TEMPLATES = [
     {
@@ -75,13 +80,41 @@ WSGI_APPLICATION = 'LinkedBookmark.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
+if not 'IP_SGBD' in os.environ:
+    os.environ['IP_SGBD'] = '172.17.0.2'
+
+if not 'PORT_SGBD' in os.environ:
+    os.environ['PORT_SGBD'] = '5432'
+
+if not 'DB_NAME' in os.environ:
+    os.environ['DB_NAME'] = 'idehco3'
+
+if not 'DB_USERNAME' in os.environ:
+    os.environ['DB_USERNAME'] = 'idehco3'
+
+if not 'DB_PASSWORD' in os.environ:
+    os.environ['DB_PASSWORD'] = 'idehco3'
+
+ip_sgbd = os.environ['IP_SGBD']
+port_sgbd = os.environ['PORT_SGBD']
+db_name = os.environ['DB_NAME']
+user = os.environ['DB_USERNAME']
+password = os.environ['DB_PASSWORD']
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'OPTIONS': {
+            'options': '-c search_path=public,bcim,idehco3,anp',
+        },
+
+        'HOST': ip_sgbd,
+        'PORT': port_sgbd,
+        'NAME': db_name,
+        'USER': user,
+        'PASSWORD': password
     }
 }
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
