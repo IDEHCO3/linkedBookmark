@@ -5,10 +5,10 @@ class ResourceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = LinkedBookmarkResource
-        fields = ('name', 'description', 'user')
+        fields = ('id', 'name', 'description', 'user')
 
 class ResourceItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = LinkedBookmarkItemResource
-        fields = ('name', 'description', 'iri', 'linkedBookmark')
+        fields = ('id', 'name', 'description', 'iri', 'linkedBookmark')
