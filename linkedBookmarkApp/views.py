@@ -3,17 +3,24 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.views import APIView
 from rest_framework import status
-
-from django.core.exceptions import ObjectDoesNotExist
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from linkedBookmarkApp.models import LinkedBookmarkResource, LinkedBookmarkItemResource
+from permissions import *
 from serializers import ResourceSerializer, ResourceItemSerializer
 from context import *
+
 # Create your views here.
 
 class ResourceList(generics.ListCreateAPIView):
     queryset = LinkedBookmarkResource.objects.all()
     serializer_class = ResourceSerializer
+
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+
+    def post(self, request, *args, **kwargs):
+        request.data['user'] = request.user.id
+        return super(ResourceList, self).post(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         response = super(ResourceList, self).get(request, *args, **kwargs)
@@ -26,6 +33,8 @@ class ResourceList(generics.ListCreateAPIView):
 class ResourceDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = LinkedBookmarkResource.objects.all()
     serializer_class = ResourceSerializer
+
+    permission_classes = (IsAuthenticatedOrReadOnly, IsOwnerOrReadOnlyResource,)
 
     def get(self, request, *args, **kwargs):
         response = super(ResourceDetail, self).get(request, *args, **kwargs)
@@ -44,6 +53,8 @@ class ResourceItemList(generics.ListCreateAPIView):
     queryset = LinkedBookmarkItemResource.objects.all()
     serializer_class = ResourceItemSerializer
 
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+
     def get_queryset(self):
         resource_id = self.kwargs.get('resource_id')
         if resource_id is not None:
@@ -61,6 +72,8 @@ class ResourceItemList(generics.ListCreateAPIView):
 class ResourceItemDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = LinkedBookmarkItemResource.objects.all()
     serializer_class = ResourceItemSerializer
+
+    permission_classes = (IsAuthenticatedOrReadOnly, IsOwnerOrReadOnlyResourceItem,)
 
     def get_queryset(self):
         resource_id = self.kwargs.get('resource_id')
