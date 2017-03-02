@@ -53,13 +53,19 @@ class ResourceItemList(generics.ListCreateAPIView):
     queryset = LinkedBookmarkItemResource.objects.all()
     serializer_class = ResourceItemSerializer
 
-    permission_classes = (IsAuthenticatedOrReadOnly,)
+    permission_classes = (IsAuthenticatedOrReadOnly, IsOwnerOrReadOnlyResourceItemPost, )
 
     def get_queryset(self):
         resource_id = self.kwargs.get('resource_id')
         if resource_id is not None:
             return self.queryset.filter(linkedBookmark=resource_id)
         return self.queryset.all()
+
+    def post(self, request, *args, **kwargs):
+        resource_id = self.kwargs.get('resource_id')
+        if resource_id is not None:
+            request.data['linkedBookmark'] = resource_id
+        return super(ResourceItemList, self).post(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         response = super(ResourceItemList, self).get(request, *args, **kwargs)
