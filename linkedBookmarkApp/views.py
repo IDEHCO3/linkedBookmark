@@ -61,12 +61,6 @@ class ResourceItemList(generics.ListCreateAPIView):
             return self.queryset.filter(linkedBookmark=resource_id)
         return self.queryset.all()
 
-    def post(self, request, *args, **kwargs):
-        resource_id = self.kwargs.get('resource_id')
-        if resource_id is not None:
-            request.data['linkedBookmark'] = resource_id
-        return super(ResourceItemList, self).post(request, *args, **kwargs)
-
     def get(self, request, *args, **kwargs):
         response = super(ResourceItemList, self).get(request, *args, **kwargs)
         response = addContextInHeader(reverse('linked-bookmark-app:resource-item-context', request=request), response)

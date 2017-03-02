@@ -55,6 +55,8 @@ class IsOwnerOrReadOnlyResourceItemPost(permissions.BasePermission):
             return True
 
         resource_id = self.kwargs.get('resource_id')
+        if resource_id is None:
+            resource_id = request.data['linkedBookmark']
 
         try:
             user_id = LinkedBookmarkResource.objects.get(id=resource_id).user.id
