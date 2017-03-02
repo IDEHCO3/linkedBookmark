@@ -54,7 +54,7 @@ class IsOwnerOrReadOnlyResourceItemPost(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             return True
 
-        resource_id = self.kwargs.get('resource_id')
+        resource_id = view.kwargs.get('resource_id')
         if resource_id is None:
             resource_id = request.data['linkedBookmark']
 
